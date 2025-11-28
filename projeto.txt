@@ -1,0 +1,90 @@
+Guia do Projeto “Philosophers”
+✅ O que já foi feito
+
+Arquivo de header philo.h
+
+Contém structs (t_rules, t_philo) e protótipos de todas as funções.
+
+Contém #define para limites do projeto e bibliotecas necessárias.
+
+Utils (utils.c)
+
+Funções auxiliares:
+
+ft_atoi → converter strings para inteiros.
+
+ft_calloc → alocar memória inicializada.
+
+ft_isdigit, ft_bzero, ft_strlen → validações e manipulações básicas.
+
+Mutexes (mutex_utils.c)
+
+init_all_mutexes → inicializa todos os forks e o mutex de print.
+
+destroy_all_mutexes → destrói todos os mutexes no final.
+
+Inicialização de regras e filósofos (rules.c)
+
+init_rules() → aloca t_rules, define tempos, quantidade de filósofos, aloca forks e inicializa mutexes.
+
+init_philo() → aloca array de t_philo, inicializa id, meals_eaten, last_meal_time, ponteiros para forks e ponteiro para regras.
+
+⏳ O que ainda falta fazer
+
+Função que pega timestamp atual
+
+get_time_ms() → retorna tempo em milissegundos desde o início da simulação.
+
+Rotina de cada filósofo (philo_routine)
+
+Ciclo: comer → dormir → pensar.
+
+Pegar forks com mutexes.
+
+Atualizar last_meal_time e meals_eaten.
+
+Usar usleep para simular tempos.
+
+Criação das threads
+
+pthread_create para cada filósofo.
+
+Passar t_philo como argumento para a rotina.
+
+Monitoramento da morte
+
+Checar se algum filósofo excedeu time_to_die.
+
+Atualizar someone_died com mutex.
+
+Garantir que a mensagem de morte seja impressa uma única vez.
+
+Esperar threads terminarem
+
+pthread_join em todas as threads.
+
+Limpeza
+
+destroy_all_mutexes().
+
+free() de arrays de t_philo e t_rules.
+
+➡ Próximo passo
+
+Criar a rotina de cada filósofo (philo_routine):
+
+Entrar em um loop infinito de:
+
+Pegar o fork da esquerda e direita (mutex lock).
+
+Registrar que começou a comer, atualizar last_meal_time e meals_eaten.
+
+Dormir (usleep(time_to_eat)).
+
+Soltar os forks (mutex unlock).
+
+Dormir (time_to_sleep).
+
+Pensar (apenas mensagem de log).
+
+Todas as ações devem imprimir mensagens com mutex de print para evitar sobreposição.
