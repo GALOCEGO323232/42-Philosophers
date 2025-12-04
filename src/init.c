@@ -45,3 +45,30 @@ t_philo *init_philo(t_rules *rules)
 	}
 	return (philosophers);
 }
+
+int	start_threads(t_rules *rules, t_philo *philos)
+{
+	int 	i;
+	int		threads;
+
+	i = 0;
+	threads = 0;
+	rules->start_time = get_time_ms();
+	while (i < rules->philo)
+	{
+		philos[i].last_meal_time = rules->start_time;
+		i++;
+	}
+	i = 0;
+	while (i < rules->philo)
+	{
+		if (pthread_create(&philos[i].thread, NULL, philo_routine, &philos[i]) != 0)
+			break;
+		threads++;
+		i++;
+		usleep(100);
+	}
+	if (threads != rules->philo)
+		return(thread_failure(philos, threads));
+	return (0);
+}
