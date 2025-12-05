@@ -63,7 +63,7 @@ int 	thread_failure(t_philo *philos, int threads_created);
 //---------------monitor------------------
 
 unsigned long get_time_ms(void);
-void 		  precise_usleep(unsigned long time_in_ms);
+void 		precise_usleep(unsigned long time_in_ms, t_rules *rules);
 void	      *monitor_routine(void *arg);
 
 //---------------actions-------------------

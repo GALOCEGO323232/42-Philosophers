@@ -7,13 +7,17 @@ unsigned long get_time_ms(void)
 	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
 }
 
-void precise_usleep(unsigned long time_in_ms)
+void precise_usleep(unsigned long time_in_ms, t_rules *rules)
 {
 	unsigned long	start;
 
 	start = get_time_ms();
-	while (get_time_ms() - start < time_in_ms)
-		usleep (100);
+	while (!rules->someone_died)
+	{
+		if (get_time_ms() - start >= time_in_ms)
+			break ;
+		usleep(100);
+	}
 }
 
 static int monitor_check_death(t_philo *philos, int i)

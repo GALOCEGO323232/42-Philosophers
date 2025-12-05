@@ -3,8 +3,7 @@
 static void handle_one_philo(t_philo *philo)
 {
     philo_action(philo, 4);
-    precise_usleep(philo->rules->time_to_die);
-
+    precise_usleep(philo->rules->time_to_die, philo->rules);
     pthread_mutex_lock(&philo->rules->death_mutex);
     pthread_mutex_lock(&philo->rules->print_mutex);
     printf("%lu %d died\n",
@@ -16,19 +15,18 @@ static void handle_one_philo(t_philo *philo)
 
 static void philo_loop(t_philo *philo)
 {
-    while (is_someone_dead(philo->rules) == 0 &&
-        (philo->rules->max_eats == 0 ||
-            philo->meals_eaten < philo->rules->max_eats))
-    {
-        philo_action(philo, 1);
-        philo_forks_or_eating_or_sleep(philo, 1);
-        if (is_someone_dead(philo->rules))
-            break;
-        philo_forks_or_eating_or_sleep(philo, 2);
-        if (is_someone_dead(philo->rules))
-            break;
-        philo_forks_or_eating_or_sleep(philo, 3);
-    }
+	while (!is_someone_dead(philo->rules) && 
+		(philo->rules->max_eats == 0 || 
+			philo->meals_eaten < philo->rules->max_eats))
+	{
+		philo_forks_or_eating_or_sleep(philo, 1);
+		if (is_someone_dead(philo->rules))
+			break ;
+		philo_forks_or_eating_or_sleep(philo, 2);
+		if (is_someone_dead(philo->rules))
+			break ;
+		philo_forks_or_eating_or_sleep(philo, 3);
+	}
 }
 
 void	*philo_routine(void *arg)
