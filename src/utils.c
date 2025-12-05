@@ -44,13 +44,13 @@ size_t	ft_strlen(const char *str)
 	return (len);
 }
 
-t_rules *free_rules(t_rules *rules)
+t_rules	*free_rules(t_rules *rules)
 {
-    if (rules)
-    {
-        if (rules->forks)
-            free(rules->forks);
-        free(rules);
-    }
-    return (NULL);
+	if (rules)
+	{
+		if (rules->forks)
+			free(rules->forks);
+		free(rules);
+	}
+	return (NULL);
 }

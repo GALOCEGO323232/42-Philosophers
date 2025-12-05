@@ -1,90 +1,203 @@
-Guia do Projeto “Philosophers”
-✅ O que já foi feito
+Guia de estudo do código dos filósofos (42)
+1. Estruturas principais
+t_rules
 
-Arquivo de header philo.h
+Armazena regras e informações gerais:
 
-Contém structs (t_rules, t_philo) e protótipos de todas as funções.
+time_to_die, time_to_eat, time_to_sleep → tempos em ms.
 
-Contém #define para limites do projeto e bibliotecas necessárias.
+start_time → momento inicial do programa.
 
-Utils (utils.c)
+philo → número de filósofos.
+
+max_eats → número máximo de refeições (opcional).
+
+someone_died → flag global para indicar se algum filósofo morreu.
+
+Mutexes:
+
+forks → array de mutexes para garfos.
+
+print_mutex → controla escrita na tela para evitar sobreposição.
+
+meal_mutex → protege acesso ao último tempo de refeição.
+
+death_mutex → protege acesso à flag someone_died.
+
+t_philo
+
+Armazena informações de cada filósofo:
+
+id_philo → identificador do filósofo.
+
+meals_eaten → número de refeições já feitas.
+
+last_meal_time → último momento em que comeu.
+
+Ponteiros para regras e garfos (left_fork e right_fork).
+
+thread → pthread do filósofo.
+
+2. Inicialização
+init_rules(int argc, char **argv)
+
+Cria e preenche a estrutura t_rules.
+
+Inicializa mutexes (forks, meal_mutex, print_mutex, death_mutex).
+
+init_philo(t_rules *rules)
+
+Cria array de filósofos.
+
+Cada filósofo recebe:
+
+ID, ponteiro para regras, ponteiros para garfos esquerdo e direito.
+
+last_meal_time inicial.
+
+init_all_mutexes / destroy_all_mutexes
+
+Inicializa ou destrói mutexes.
+
+Cada garfo é um mutex separado.
+
+Outros mutexes controlam:
+
+Impressão segura (print_mutex)
+
+Atualização de refeições (meal_mutex)
+
+Flag de morte (death_mutex)
+
+3. Funções utilitárias
+ft_atoi, ft_isdigit, ft_calloc, ft_bzero, ft_strlen
+
+Funções auxiliares clássicas do C.
+
+get_time_ms()
+
+Retorna o tempo atual em milissegundos.
+
+precise_usleep(time_in_ms, t_rules *rules)
+
+Espera de forma precisa, verificando constantemente se alguém morreu.
+
+Evita que o programa fique travado em um usleep longo sem controle.
+
+4. Funções de ação do filósofo
+philo_action(t_philo *philo, int actions)
+
+Imprime a ação de acordo com o código:
+
+1 → thinking, 2 → eating, 3 → sleeping, 4 → pegou garfo, 5 → morreu.
+
+Usa mutex print_mutex para evitar que mensagens se sobreponham.
+
+philo_take_forks(t_philo *philo)
+
+Escolhe ordem de pegar os garfos (choose_fork_order).
+
+Trava os mutexes dos garfos com pthread_mutex_lock.
+
+Libera depois de comer (pthread_mutex_unlock).
+
+philo_forks_or_eating_or_sleep(t_philo *philo, int action)
+
+Chama funções específicas:
+
+philo_think, philo_eat, philo_sleep.
+
+5. Rotina dos filósofos
+philo_routine(void *arg)
+
+Função principal de cada thread.
+
+Para um filósofo:
+
+Se só tiver 1, ele só pega o garfo e morre depois do tempo de time_to_die.
+
+Para vários:
+
+Filósofos pares começam com atraso (usleep) para evitar deadlock.
+
+Ciclo:
+
+Pensar (philo_think)
+
+Comer (philo_eat)
+
+Dormir (philo_sleep)
+
+Repete até alguém morrer ou atingir max_eats.
+
+philo_loop(t_philo *philo)
+
+Loop interno que verifica se alguém morreu.
+
+Controla quantas vezes o filósofo já comeu.
+
+Alterna ações de forma sequencial.
+
+6. Monitoramento
+monitor_routine(void *arg)
+
+Função da thread monitor.
+
+Ciclo:
+
+Verifica se algum filósofo morreu (monitor_check_death).
+
+Usa mutex meal_mutex para ler last_meal_time.
+
+Atualiza someone_died com death_mutex.
+
+Verifica se todos comeram max_eats (monitor_check_meals).
 
 Funções auxiliares:
 
-ft_atoi → converter strings para inteiros.
+monitor_check_death(t_philo *philos, int i) → verifica tempo sem comer.
 
-ft_calloc → alocar memória inicializada.
+monitor_check_meals(t_philo *philos) → verifica se todos comeram o suficiente.
 
-ft_isdigit, ft_bzero, ft_strlen → validações e manipulações básicas.
+7. Mutexes
+Usos principais
 
-Mutexes (mutex_utils.c)
+forks[i] → evita que dois filósofos peguem o mesmo garfo ao mesmo tempo.
 
-init_all_mutexes → inicializa todos os forks e o mutex de print.
+print_mutex → evita mensagens misturadas na tela.
 
-destroy_all_mutexes → destrói todos os mutexes no final.
+meal_mutex → protege last_meal_time e meals_eaten.
 
-Inicialização de regras e filósofos (rules.c)
+death_mutex → protege a flag global someone_died.
 
-init_rules() → aloca t_rules, define tempos, quantidade de filósofos, aloca forks e inicializa mutexes.
+Sem mutex, haveria corrida de dados (race condition):
 
-init_philo() → aloca array de t_philo, inicializa id, meals_eaten, last_meal_time, ponteiros para forks e ponteiro para regras.
+Dois filósofos podem pegar o mesmo garfo.
 
-⏳ O que ainda falta fazer
+Monitor pode ler um last_meal_time incompleto.
 
-Função que pega timestamp atual
+Mensagens na tela podem sobrepor.
 
-get_time_ms() → retorna tempo em milissegundos desde o início da simulação.
+8. Tratamento de falhas
 
-Rotina de cada filósofo (philo_routine)
+thread_failure(t_philo *philos, int threads_created) → faz join em threads já criadas em caso de erro e libera memória.
 
-Ciclo: comer → dormir → pensar.
+init_fork_mutexes / init_other_mutexes → inicializa mutexes e destrói em caso de erro.
 
-Pegar forks com mutexes.
+Resumo do ciclo de cada filósofo
 
-Atualizar last_meal_time e meals_eaten.
+Pensar → pegar garfos → comer → soltar garfos → dormir → repetir.
 
-Usar usleep para simular tempos.
+Monitor thread verifica constantemente:
 
-Criação das threads
+Se alguém morreu.
 
-pthread_create para cada filósofo.
+Se todos comeram max_eats.
 
-Passar t_philo como argumento para a rotina.
+Mutexes garantem:
 
-Monitoramento da morte
+Nenhum garfo é usado por dois filósofos ao mesmo tempo.
 
-Checar se algum filósofo excedeu time_to_die.
+Impressão correta.
 
-Atualizar someone_died com mutex.
-
-Garantir que a mensagem de morte seja impressa uma única vez.
-
-Esperar threads terminarem
-
-pthread_join em todas as threads.
-
-Limpeza
-
-destroy_all_mutexes().
-
-free() de arrays de t_philo e t_rules.
-
-➡ Próximo passo
-
-Criar a rotina de cada filósofo (philo_routine):
-
-Entrar em um loop infinito de:
-
-Pegar o fork da esquerda e direita (mutex lock).
-
-Registrar que começou a comer, atualizar last_meal_time e meals_eaten.
-
-Dormir (usleep(time_to_eat)).
-
-Soltar os forks (mutex unlock).
-
-Dormir (time_to_sleep).
-
-Pensar (apenas mensagem de log).
-
-Todas as ações devem imprimir mensagens com mutex de print para evitar sobreposição.
+Atualização segura de last_meal_time e flag de morte.

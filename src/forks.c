@@ -1,33 +1,33 @@
 #include "philo.h"
 
-static void choose_fork_order(t_philo *philo, pthread_mutex_t **first,
-                              pthread_mutex_t **second)
+static void	choose_fork_order(t_philo *philo, pthread_mutex_t **first,
+							  pthread_mutex_t **second)
 {
-    if (philo->left_fork < philo->right_fork)
-    {
-        *first = philo->left_fork;
-        *second = philo->right_fork;
-    }
-    else
-    {
-        *first = philo->right_fork;
-        *second = philo->left_fork;
-    }
+	if (philo->left_fork < philo->right_fork)
+	{
+		*first = philo->left_fork;
+		*second = philo->right_fork;
+	}
+	else
+	{
+		*first = philo->right_fork;
+		*second = philo->left_fork;
+	}
 }
 
-void philo_take_forks(t_philo *philo)
+void	philo_take_forks(t_philo *philo)
 {
-    pthread_mutex_t *first;
-    pthread_mutex_t *second;
+	pthread_mutex_t	*first;
+	pthread_mutex_t	*second;
 
-    choose_fork_order(philo, &first, &second);
-    pthread_mutex_lock(first);
-    philo_action(philo, 4);
-    if (is_someone_dead(philo->rules))
-    {
-        pthread_mutex_unlock(first);
-        return;
-    }
-    pthread_mutex_lock(second);
-    philo_action(philo, 4);
+	choose_fork_order(philo, &first, &second);
+	pthread_mutex_lock(first);
+	philo_action(philo, 4);
+	if (is_someone_dead(philo->rules))
+	{
+		pthread_mutex_unlock(first);
+		return ;
+	}
+	pthread_mutex_lock(second);
+	philo_action(philo, 4);
 }
