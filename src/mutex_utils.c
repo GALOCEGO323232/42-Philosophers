@@ -41,13 +41,13 @@ void destroy_all_mutexes(int i, t_rules *rules)
 
 int thread_failure(t_philo *philos, int threads_created)
 {
-	int i;
-
-	i = 0;
-	while (i < threads_created)
-	{
-		pthread_join(philos[i].thread, NULL);
-		i++;
-	}
-	return (1);
+    int i;
+    i = 0;
+    while (i < threads_created)
+    {
+        pthread_join(philos[i].thread, NULL);
+        i++;
+    }
+    free(philos);
+    return (1);
 }

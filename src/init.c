@@ -46,29 +46,45 @@ t_philo *init_philo(t_rules *rules)
 	return (philosophers);
 }
 
-int	start_threads(t_rules *rules, t_philo *philos)
+static int	check_args(int argc, char **argv)
 {
-	int 	i;
-	int		threads;
+	int	i;
+	int	j;
 
-	i = 0;
-	threads = 0;
-	rules->start_time = get_time_ms();
-	while (i < rules->philo)
+	if (argc != 5 && argc != 6)
+		return (1);
+	i = 1;
+	while (i < argc)
 	{
-		philos[i].last_meal_time = rules->start_time;
+		j = 0;
+		while (argv[i][j])
+		{
+			if (!ft_isdigit(argv[i][j]))
+				return (1);
+			j++;
+		}
 		i++;
 	}
-	i = 0;
-	while (i < rules->philo)
+	return (0);
+}
+
+int	main(int argc, char **argv)
+{
+	t_rules	*rules;
+	t_philo	*philos;
+
+	if (check_args(argc, argv))
+		return (write(2, "Error\n", 6), 1);
+	rules = init_rules(argc, argv);
+	if (!rules)
+		return (write(2, "Error\n", 6), 1);
+	philos = init_philo(rules);
+	if (!philos)
 	{
-		if (pthread_create(&philos[i].thread, NULL, philo_routine, &philos[i]) != 0)
-			break;
-		threads++;
-		i++;
-		usleep(100);
+		free_rules(rules);
+		return (write(2, "Error\n", 6), 1);
 	}
-	if (threads != rules->philo)
-		return(thread_failure(philos, threads));
+	if (start_threads(rules, philos))
+		return (1);
 	return (0);
 }

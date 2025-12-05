@@ -39,7 +39,7 @@ typedef struct s_philo
 
 t_rules	*init_rules(int argc, char **argv);
 t_philo *init_philo(t_rules *rules);
-int		start_threads(t_rules *rules, t_philo *philos);
+int		start_threads(t_rules *rules, t_philo *philos)
 
 //-----------------utils------------------
 
@@ -62,7 +62,8 @@ int 	thread_failure(t_philo *philos, int threads_created);
 //---------------monitor------------------
 
 unsigned long get_time_ms(void);
-void precise_usleep(long time_in_ms);
+void		  precise_usleep(long time_in_ms);
+void	      *monitor_routine(void *arg);
 
 //---------------actions-------------------
 
