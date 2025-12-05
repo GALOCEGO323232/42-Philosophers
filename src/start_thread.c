@@ -57,8 +57,8 @@ int	start_threads(t_rules *rules, t_philo *philos)
 		return (1);
 	if (pthread_create(&monitor, NULL, monitor_routine, (void *)philos) != 0)
 	{
-    	set_someone_dead(rules);
-    	return thread_failure(philos, rules->philo);
+		set_someone_dead(rules);
+		return thread_failure(philos, rules->philo);
 	}
 	wait_all_threads(rules, philos, monitor);
 	destroy_all_mutexes(0, rules);

@@ -1,20 +1,5 @@
 #include "philo.h"
 
-
-#include "philo.h"
-
-void print_action(t_philo *philo, char *msg)
-{
-    pthread_mutex_lock(&philo->rules->print_mutex);
-    
-    if (!is_someone_dead(philo->rules))
-        printf("%lu %d %s\n",
-            get_time_ms() - philo->rules->start_time,
-            philo->id_philo, msg);
-    
-    pthread_mutex_unlock(&philo->rules->print_mutex);
-}
-
 void philo_action(t_philo *philo, int actions)
 {
     if (actions == 1)
@@ -29,57 +14,41 @@ void philo_action(t_philo *philo, int actions)
         print_action(philo, "died");
 }
 
+static void philo_think(t_philo *philo)
+{
+    philo_action(philo, 1);
+    usleep(500);
+    philo_take_forks(philo);
+}
+
+static void philo_eat(t_philo *philo)
+{
+    if (is_someone_dead(philo->rules))
+        return;
+    philo_action(philo, 2);
+    pthread_mutex_lock(&philo->rules->meal_mutex);
+    philo->last_meal_time = get_time_ms();
+    philo->meals_eaten++;
+    pthread_mutex_unlock(&philo->rules->meal_mutex);
+    precise_usleep(philo->rules->time_to_eat, philo->rules);
+    pthread_mutex_unlock(philo->left_fork);
+    pthread_mutex_unlock(philo->right_fork);
+}
+
+static void philo_sleep(t_philo *philo)
+{
+    philo_action(philo, 3);
+    precise_usleep(philo->rules->time_to_sleep, philo->rules);
+}
+
 void philo_forks_or_eating_or_sleep(t_philo *philo, int action)
 {
     if (is_someone_dead(philo->rules))
         return;
-    
     if (action == 1)
-    {
-        philo_action(philo, 1);
-        philo_take_forks(philo);
-    }
+        philo_think(philo);
     else if (action == 2)
-    {
-        philo_action(philo, 2);
-        pthread_mutex_lock(&philo->rules->meal_mutex);
-        philo->last_meal_time = get_time_ms();
-        philo->meals_eaten++;
-        pthread_mutex_unlock(&philo->rules->meal_mutex);
-        precise_usleep(philo->rules->time_to_eat, philo->rules);
-        pthread_mutex_unlock(philo->left_fork);
-        pthread_mutex_unlock(philo->right_fork);
-    }
+        philo_eat(philo);
     else if (action == 3)
-    {
-        philo_action(philo, 3);
-        precise_usleep(philo->rules->time_to_sleep, philo->rules);
-    }
-}
-
-static void choose_fork_order(t_philo *philo, pthread_mutex_t **first,
-                              pthread_mutex_t **second)
-{
-    if (philo->id_philo % 2 == 0)
-    {
-        *first = philo->right_fork;
-        *second = philo->left_fork;
-    }
-    else
-    {
-        *first = philo->left_fork;
-        *second = philo->right_fork;
-    }
-}
-
-void philo_take_forks(t_philo *philo)
-{
-    pthread_mutex_t *first;
-    pthread_mutex_t *second;
-
-    choose_fork_order(philo, &first, &second);
-    pthread_mutex_lock(first);
-    philo_action(philo, 4);
-    pthread_mutex_lock(second);
-    philo_action(philo, 4);
+        philo_sleep(philo);
 }
