@@ -9,15 +9,15 @@ unsigned long get_time_ms(void)
 
 void precise_usleep(unsigned long time_in_ms, t_rules *rules)
 {
-	unsigned long	start;
+    unsigned long start;
 
-	start = get_time_ms();
-	while (!rules->someone_died)
-	{
-		if (get_time_ms() - start >= time_in_ms)
-			break ;
-		usleep(100);
-	}
+    start = get_time_ms();
+    while (!rules->someone_died)
+    {
+        if (get_time_ms() - start >= time_in_ms)
+            break;
+        usleep(500);
+    }
 }
 
 static int monitor_check_death(t_philo *philos, int i)

@@ -37,7 +37,7 @@ void	*philo_routine(void *arg)
     if (philo->rules->philo == 1)
         return (handle_one_philo(philo), NULL);
     if (philo->id_philo % 2 == 0)
-        usleep(100);
+        precise_usleep(1, philo->rules);
     philo_loop(philo);
     return (NULL);
 }
