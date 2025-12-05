@@ -1,16 +1,16 @@
 NAME = philo
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -pthread
+CFLAGS = -Wall -Wextra -Werror -pthread -I include
 
-SRCS = actions.c\
-	   free.c\
-	   init.c\
-	   monitor.c\
-	   mutex_utils.c\
-	   routine.c\
-	   start_thread.c\
-	   utils.c
+SRCS = src/actions.c\
+	   src/free.c\
+	   src/init.c\
+	   src/monitor.c\
+	   src/mutex_utils.c\
+	   src/routine.c\
+	   src/start_thread.c\
+	   src/utils.c
 
 OBJS = $(SRCS:.c=.o)
 

@@ -43,3 +43,20 @@ size_t	ft_strlen(const char *str)
 	}
 	return (len);
 }
+
+int is_someone_dead(t_rules *rules)
+{
+    int val;
+
+    pthread_mutex_lock(&rules->death_mutex);
+    val = rules->someone_died;
+    pthread_mutex_unlock(&rules->death_mutex);
+    return (val);
+}
+
+void set_someone_dead(t_rules *rules)
+{
+    pthread_mutex_lock(&rules->death_mutex);
+    rules->someone_died = 1;
+    pthread_mutex_unlock(&rules->death_mutex);
+}

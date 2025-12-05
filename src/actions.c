@@ -1,15 +1,17 @@
 #include "philo.h"
 
-void	print_action(t_philo *philo, char *msg)
+void print_action(t_philo *philo, char *msg)
 {
-	pthread_mutex_lock(&philo->rules->print_mutex);
-	if (philo->rules->someone_died == 0)
-	{
-		printf("%lu %d %s\n", get_time_ms() - 
-			philo->rules->start_time, philo->id_philo, msg);
-	}
-	pthread_mutex_unlock(&philo->rules->print_mutex);
+    pthread_mutex_lock(&philo->rules->print_mutex);
+    if (philo->rules->someone_died == 0)
+    {
+        printf("%lu %d %s\n", get_time_ms() - philo->rules->start_time,
+               philo->id_philo, msg);
+    }
+    pthread_mutex_unlock(&philo->rules->print_mutex);
+    pthread_mutex_unlock(&philo->rules->death_mutex);
 }
+
 
 void	philo_action(t_philo *philo, int actions)
 {
@@ -38,10 +40,10 @@ void philo_forks_or_eating_or_sleep(t_philo *philo, int actions)
         philo_action(philo, 2);
         pthread_mutex_lock(&philo->rules->meal_mutex);
         philo->last_meal_time = get_time_ms();
-        pthread_mutex_unlock(&philo->rules->meal_mutex);
         philo->meals_eaten++;
+        pthread_mutex_unlock(&philo->rules->meal_mutex);
         precise_usleep(philo->rules->time_to_eat);
-    	pthread_mutex_unlock(philo->left_fork);
+        pthread_mutex_unlock(philo->left_fork);
         pthread_mutex_unlock(philo->right_fork);
         return ;
     }
@@ -74,18 +76,18 @@ void philo_take_forks(t_philo *philo)
     pthread_mutex_t *second;
 
     choose_fork_order(philo, &first, &second);
-    if (philo->rules->someone_died)
+    if (is_someone_dead(philo->rules))
         return ;
     pthread_mutex_lock(first);
     philo_action(philo, 4);
-    if (philo->rules->someone_died)
+    if (is_someone_dead(philo->rules))
     {
         pthread_mutex_unlock(first);
         return ;
     }
     pthread_mutex_lock(second);
     philo_action(philo, 4);
-    if (philo->rules->someone_died)
+    if (is_someone_dead(philo->rules))
     {
         pthread_mutex_unlock(first);
         pthread_mutex_unlock(second);

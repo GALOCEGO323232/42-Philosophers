@@ -18,10 +18,11 @@ typedef struct s_rules
 	unsigned long start_time;
 	int philo;
 	int max_eats;
-	int	someone_died;
+	int someone_died;
 	pthread_mutex_t *forks;
 	pthread_mutex_t print_mutex;
 	pthread_mutex_t meal_mutex;
+	pthread_mutex_t death_mutex;
 } t_rules;
 
 typedef struct s_philo
@@ -39,7 +40,7 @@ typedef struct s_philo
 
 t_rules	*init_rules(int argc, char **argv);
 t_philo *init_philo(t_rules *rules);
-int		start_threads(t_rules *rules, t_philo *philos)
+int		start_threads(t_rules *rules, t_philo *philos);
 
 //-----------------utils------------------
 
@@ -62,7 +63,7 @@ int 	thread_failure(t_philo *philos, int threads_created);
 //---------------monitor------------------
 
 unsigned long get_time_ms(void);
-void		  precise_usleep(long time_in_ms);
+void 		  precise_usleep(unsigned long time_in_ms);
 void	      *monitor_routine(void *arg);
 
 //---------------actions-------------------
@@ -72,3 +73,7 @@ void	print_action(t_philo *philo, char *msg);
 void	philo_action(t_philo *philo, int actions);
 void 	philo_forks_or_eating_or_sleep(t_philo *philo, int actions);
 void 	*philo_routine(void *arg);
+void 	set_someone_dead(t_rules *rules);
+int 	is_someone_dead(t_rules *rules);
+
+#endif
