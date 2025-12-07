@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   monitor.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: kgagliar <kgagliar@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/12/07 17:12:44 by kgagliar          #+#    #+#             */
+/*   Updated: 2025/12/07 17:12:44 by kgagliar         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philo.h"
 
 static int	monitor_check_death(t_philo *philos, int i)
@@ -20,7 +32,7 @@ static int	monitor_check_death(t_philo *philos, int i)
 		{
 			rules->someone_died = 1;
 			pthread_mutex_lock(&rules->print_mutex);
-			printf("%lu %d died\n", now - rules->start_time, 
+			printf("%lu %d died\n", now - rules->start_time,
 				philos[i].id_philo);
 			pthread_mutex_unlock(&rules->print_mutex);
 		}
@@ -43,11 +55,10 @@ static int	check_all_ate(t_philo *philos, t_rules *rules)
 		pthread_mutex_lock(&rules->meal_mutex);
 		meals = philos[i].meals_eaten;
 		pthread_mutex_unlock(&rules->meal_mutex);
-		
 		if (meals < rules->max_eats)
 		{
 			all_ate = 0;
-			break;
+			break ;
 		}
 		i++;
 	}

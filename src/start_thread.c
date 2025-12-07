@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   start_thread.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: kgagliar <kgagliar@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/12/07 17:12:20 by kgagliar          #+#    #+#             */
+/*   Updated: 2025/12/07 17:12:20 by kgagliar         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philo.h"
 
 static void	init_philo_start_time(t_rules *rules, t_philo *philos)
@@ -58,7 +70,7 @@ int	start_threads(t_rules *rules, t_philo *philos)
 	if (pthread_create(&monitor, NULL, monitor_routine, (void *)philos) != 0)
 	{
 		set_someone_dead(rules);
-		return thread_failure(philos, rules->philo);
+		return (thread_failure(philos, rules->philo));
 	}
 	wait_all_threads(rules, philos, monitor);
 	destroy_all_mutexes(0, rules);

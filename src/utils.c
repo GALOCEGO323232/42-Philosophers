@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   utils.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: kgagliar <kgagliar@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/12/07 17:12:00 by kgagliar          #+#    #+#             */
+/*   Updated: 2025/12/07 17:12:00 by kgagliar         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philo.h"
 
 int	ft_atoi(const char *nprt)
@@ -53,4 +65,18 @@ t_rules	*free_rules(t_rules *rules)
 		free(rules);
 	}
 	return (NULL);
+}
+
+void	philo_action(t_philo *philo, int actions)
+{
+	if (actions == 1)
+		print_action(philo, "is thinking");
+	else if (actions == 2)
+		print_action(philo, "is eating");
+	else if (actions == 3)
+		print_action(philo, "is sleeping");
+	else if (actions == 4)
+		print_action(philo, "has taken a fork");
+	else if (actions == 5)
+		print_action(philo, "died");
 }
