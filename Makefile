@@ -1,7 +1,7 @@
 NAME = philo
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -pthread -I include
+CFLAGS = -Wall -Wextra -Werror -pthread -I include -g
 
 SRCS = src/actions.c\
 	   src/init.c\

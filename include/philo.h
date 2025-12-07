@@ -48,18 +48,18 @@ typedef struct s_philo
 	pthread_t		thread;
 }	t_philo;
 
-t_rules	*init_rules(int argc, char **argv);
-t_philo	*init_philo(t_rules *rules);
-int		start_threads(t_rules *rules, t_philo *philos);
-void	*ft_calloc(size_t nmemb, size_t size);
-int		ft_atoi(const char *nprt);
-int		ft_isdigit(int c);
-void	ft_bzero(void *s, size_t n);
-size_t	ft_strlen(const char *str);
-t_rules	*free_rules(t_rules *rules);
-void	destroy_all_mutexes(int i, t_rules *rules);
-int		init_all_mutexes(int i, t_rules *rules);
-int		thread_failure(t_philo *philos, int threads_created);
+t_rules			*init_rules(int argc, char **argv);
+t_philo			*init_philo(t_rules *rules);
+int				start_threads(t_rules *rules, t_philo *philos);
+void			*ft_calloc(size_t nmemb, size_t size);
+int				ft_atoi(const char *nprt);
+int				ft_isdigit(int c);
+void			ft_bzero(void *s, size_t n);
+size_t			ft_strlen(const char *str);
+t_rules			*free_rules(t_rules *rules);
+void			destroy_all_mutexes(int i, t_rules *rules);
+int				init_all_mutexes(int i, t_rules *rules);
+int				thread_failure(t_philo *philos, int threads_created);
 unsigned long	get_time_ms(void);
 void			precise_usleep(unsigned long time_in_ms, t_rules *rules);
 void			*monitor_routine(void *arg);
@@ -69,5 +69,9 @@ void			philo_forks_or_eating_or_sleep(t_philo *philo, int actions);
 void			*philo_routine(void *arg);
 void			set_someone_dead(t_rules *rules);
 int				is_someone_dead(t_rules *rules);
+void			philo_sleep(t_philo *philo);
+void			philo_eat(t_philo *philo);
+void			philo_think(t_philo *philo);
+int				philo_try_take_forks(t_philo *philo);
 
 #endif

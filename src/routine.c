@@ -63,14 +63,28 @@ void	*philo_routine(void *arg)
 
 void	print_action(t_philo *philo, char *msg)
 {
+	pthread_mutex_lock(&philo->rules->death_mutex);
 	if (philo->rules->someone_died)
-		return ;
-	pthread_mutex_lock(&philo->rules->print_mutex);
-	if (!philo->rules->someone_died)
 	{
-		printf("%lu %d %s\n",
-			get_time_ms() - philo->rules->start_time,
-			philo->id_philo, msg);
+		pthread_mutex_unlock(&philo->rules->death_mutex);
+		return ;
 	}
+	pthread_mutex_lock(&philo->rules->print_mutex);
+	printf("%lu %d %s\n",
+		get_time_ms() - philo->rules->start_time,
+		philo->id_philo, msg);
 	pthread_mutex_unlock(&philo->rules->print_mutex);
+	pthread_mutex_unlock(&philo->rules->death_mutex);
+}
+
+void	philo_forks_or_eating_or_sleep(t_philo *philo, int action)
+{
+	if (is_someone_dead(philo->rules))
+		return ;
+	if (action == 1)
+		philo_think(philo);
+	else if (action == 2)
+		philo_eat(philo);
+	else if (action == 3)
+		philo_sleep(philo);
 }

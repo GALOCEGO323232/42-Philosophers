@@ -12,14 +12,12 @@
 
 #include "philo.h"
 
-static int	monitor_check_death(t_philo *philos, int i)
+static int	monitor_check_death(t_philo *philos, int i, t_rules *rules)
 {
-	t_rules			*rules;
 	unsigned long	now;
 	unsigned long	time_since_meal;
 	unsigned long	last_meal;
 
-	rules = philos[0].rules;
 	now = get_time_ms();
 	pthread_mutex_lock(&rules->meal_mutex);
 	last_meal = philos[i].last_meal_time;
@@ -99,7 +97,7 @@ void	*monitor_routine(void *arg)
 		i = 0;
 		while (i < rules->philo)
 		{
-			if (monitor_check_death(philos, i))
+			if (monitor_check_death(philos, i, rules))
 				return (NULL);
 			i++;
 		}
