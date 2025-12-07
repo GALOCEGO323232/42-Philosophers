@@ -68,7 +68,6 @@ void			*monitor_routine(void *arg);
 
 //---------------actions-------------------
 
-void			philo_take_forks(t_philo *philo);
 void			print_action(t_philo *philo, char *msg);
 void			philo_action(t_philo *philo, int actions);
 void			philo_forks_or_eating_or_sleep(t_philo *philo, int actions);

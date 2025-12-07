@@ -4,7 +4,6 @@ CC = cc
 CFLAGS = -Wall -Wextra -Werror -pthread -I include
 
 SRCS = src/actions.c\
-	   src/forks.c\
 	   src/init.c\
 	   src/main.c\
 	   src/monitor.c\

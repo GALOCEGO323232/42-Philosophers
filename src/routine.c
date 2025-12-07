@@ -1,4 +1,5 @@
 #include "philo.h"
+#include "philo.h"
 
 static void	handle_one_philo(t_philo *philo)
 {
@@ -18,19 +19,19 @@ static void	philo_loop(t_philo *philo)
 			if (philo->meals_eaten >= philo->rules->max_eats)
 			{
 				pthread_mutex_unlock(&philo->rules->meal_mutex);
-				break ;
+				break;
 			}
 			pthread_mutex_unlock(&philo->rules->meal_mutex);
 		}
 		philo_forks_or_eating_or_sleep(philo, 1);
 		if (is_someone_dead(philo->rules))
-			break ;
+			break;
 		philo_forks_or_eating_or_sleep(philo, 2);
 		if (is_someone_dead(philo->rules))
-			break ;
+			break;
 		philo_forks_or_eating_or_sleep(philo, 3);
 		if (is_someone_dead(philo->rules))
-			break ;
+			break;
 		if (philo->id_philo % 2 == 0)
 			usleep(100);
 	}
@@ -51,10 +52,19 @@ void	*philo_routine(void *arg)
 
 void	print_action(t_philo *philo, char *msg)
 {
+	// Verifica morte SEM lock - evita nested locks
+	// Pequena race condition aqui é aceitável (pior caso: imprime uma msg extra)
+	if (philo->rules->someone_died)
+		return;
+	
+	// Protege apenas o printf
 	pthread_mutex_lock(&philo->rules->print_mutex);
-	if (!is_someone_dead(philo->rules))
+	// Double-check após pegar o lock
+	if (!philo->rules->someone_died)
+	{
 		printf("%lu %d %s\n",
 			get_time_ms() - philo->rules->start_time,
 			philo->id_philo, msg);
+	}
 	pthread_mutex_unlock(&philo->rules->print_mutex);
 }

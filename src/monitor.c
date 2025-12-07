@@ -5,12 +5,14 @@ static int	monitor_check_death(t_philo *philos, int i)
 	t_rules			*rules;
 	unsigned long	now;
 	unsigned long	time_since_meal;
+	unsigned long	last_meal;
 
 	rules = philos[0].rules;
 	now = get_time_ms();
 	pthread_mutex_lock(&rules->meal_mutex);
-	time_since_meal = now - philos[i].last_meal_time;
+	last_meal = philos[i].last_meal_time;
 	pthread_mutex_unlock(&rules->meal_mutex);
+	time_since_meal = now - last_meal;
 	if (time_since_meal > rules->time_to_die)
 	{
 		pthread_mutex_lock(&rules->death_mutex);
@@ -18,7 +20,8 @@ static int	monitor_check_death(t_philo *philos, int i)
 		{
 			rules->someone_died = 1;
 			pthread_mutex_lock(&rules->print_mutex);
-			printf("%lu %d died\n", now - rules->start_time, philos[i].id_philo);
+			printf("%lu %d died\n", now - rules->start_time, 
+				philos[i].id_philo);
 			pthread_mutex_unlock(&rules->print_mutex);
 		}
 		pthread_mutex_unlock(&rules->death_mutex);
@@ -31,17 +34,21 @@ static int	check_all_ate(t_philo *philos, t_rules *rules)
 {
 	int	i;
 	int	all_ate;
+	int	meals;
 
 	i = 0;
 	all_ate = 1;
 	while (i < rules->philo)
 	{
 		pthread_mutex_lock(&rules->meal_mutex);
-		if (philos[i].meals_eaten < rules->max_eats)
-			all_ate = 0;
+		meals = philos[i].meals_eaten;
 		pthread_mutex_unlock(&rules->meal_mutex);
-		if (!all_ate)
-			break ;
+		
+		if (meals < rules->max_eats)
+		{
+			all_ate = 0;
+			break;
+		}
 		i++;
 	}
 	return (all_ate);
